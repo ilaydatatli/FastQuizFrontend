@@ -53,5 +53,14 @@ export function useQuiz() {
     active.value = null
   }
 
-  return { active, start, current, answer, clear }
+  // Quiz is over: drop it from sessionStorage and hand back what the result
+  // screen still needs. It travels in that history entry's state (same tab only),
+  // so refreshing the result page or coming back to it with the back button works.
+  function finish() {
+    const { token, category } = active.value
+    clear()
+    return { token, category: { slug: category.slug, name: category.name, color: category.color } }
+  }
+
+  return { active, start, current, answer, clear, finish }
 }

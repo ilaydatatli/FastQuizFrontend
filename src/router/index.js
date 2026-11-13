@@ -1,13 +1,22 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 
-// Result and leaderboard routes are added in Faz 9.
 const routes = [
   { path: '/', name: 'home', component: HomeView },
   {
     path: '/quiz/:quizId',
     name: 'quiz',
     component: () => import('../views/QuizView.vue'),
+  },
+  {
+    path: '/quiz/:quizId/result',
+    name: 'result',
+    component: () => import('../views/ResultView.vue'),
+  },
+  {
+    path: '/leaderboard/:slug?',
+    name: 'leaderboard',
+    component: () => import('../views/LeaderboardView.vue'),
   },
   {
     path: '/:pathMatch(.*)*',

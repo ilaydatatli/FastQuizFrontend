@@ -5,7 +5,7 @@ import { RouterLink, RouterView } from 'vue-router'
 <template>
   <header class="topbar">
     <RouterLink to="/" class="logo">FAST QUIZ</RouterLink>
-    <!-- "Skor Tablosu" link is added in Faz 9 together with LeaderboardView. -->
+    <RouterLink :to="{ name: 'leaderboard' }" class="nav-link">Skor Tablosu</RouterLink>
   </header>
   <main class="page">
     <RouterView />
@@ -30,6 +30,18 @@ import { RouterLink, RouterView } from 'vue-router'
   letter-spacing: 0.08em;
   text-decoration: none;
   text-shadow: var(--glow-sm);
+}
+
+.nav-link {
+  color: var(--color-text-muted);
+  font-family: var(--font-display);
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.nav-link:hover,
+.nav-link.router-link-active {
+  color: var(--color-text);
 }
 
 .page {

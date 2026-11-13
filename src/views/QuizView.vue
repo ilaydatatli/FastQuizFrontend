@@ -15,7 +15,7 @@ const route = useRoute()
 const router = useRouter()
 const quiz = useQuiz()
 
-const status = ref('loading') // loading | playing | finished | error
+const status = ref('loading') // loading | playing | error
 const errorText = ref('')
 const question = ref(null)
 const position = ref(0)
@@ -38,8 +38,7 @@ function applyCurrent(data) {
   points.value = data.points
   position.value = data.position
   if (data.status === 'finished' || !data.question) {
-    question.value = null
-    status.value = 'finished'
+    finish()
     return
   }
   question.value = data.question
@@ -58,6 +57,16 @@ async function loadCurrent() {
   } catch (error) {
     handleError(error)
   }
+}
+
+// Quiz over: clear sessionStorage and show the result (token travels in history state).
+function finish() {
+  allowLeave = true
+  router.replace({
+    name: 'result',
+    params: { quizId: route.params.quizId },
+    state: { quiz: quiz.finish() },
+  })
 }
 
 function leaveToHome(notice) {
@@ -94,12 +103,8 @@ async function submit(choiceId) {
     points.value = result.points
     feedbackTimer = setTimeout(() => {
       feedbackTimer = null
-      if (result.finished) {
-        position.value = result.position
-        status.value = 'finished'
-      } else {
-        loadCurrent()
-      }
+      if (result.finished) finish()
+      else loadCurrent()
     }, FEEDBACK_MS)
   } catch (error) {
     handleError(error)
@@ -135,12 +140,6 @@ function retry() {
   loadCurrent()
 }
 
-function goHome() {
-  allowLeave = true
-  quiz.clear()
-  router.push({ name: 'home' })
-}
-
 onMounted(() => {
   const active = quiz.active.value
   if (!active || active.quizId !== route.params.quizId) {
@@ -171,12 +170,6 @@ onBeforeRouteLeave(() => {
     <div v-else-if="status === 'error'" class="panel error" role="alert">
       <p>{{ errorText }}</p>
       <NeonButton @click="retry">Tekrar dene</NeonButton>
-    </div>
-
-    <div v-else-if="status === 'finished'" class="panel finished">
-      <h1>Quiz bitti! 🎉</h1>
-      <p class="final-points">{{ points }} <span class="unit">puan</span></p>
-      <NeonButton @click="goHome">Ana sayfaya dön</NeonButton>
     </div>
 
     <template v-else>
@@ -234,22 +227,6 @@ onBeforeRouteLeave(() => {
 
 .error {
   border-color: var(--color-wrong);
-}
-
-.final-points {
-  display: flex;
-  align-items: baseline;
-  gap: var(--space-2);
-  color: var(--accent);
-  font-family: var(--font-mono);
-  font-size: 3rem;
-  font-weight: 500;
-  line-height: 1;
-}
-
-.unit {
-  color: var(--color-text-muted);
-  font-size: 1rem;
 }
 
 .badge {
