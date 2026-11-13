@@ -1,27 +1,54 @@
 <script setup>
 import { onMounted, ref } from 'vue'
+import { useRouter } from 'vue-router'
 import { getCategories } from '../api/quiz.js'
+import { errorMessage, useQuiz } from '../composables/useQuiz.js'
 import CategoryCard from '../components/CategoryCard.vue'
 import NeonButton from '../components/NeonButton.vue'
 
+const router = useRouter()
+const quiz = useQuiz()
+
 const categories = ref([])
 const loading = ref(true)
-const errorMessage = ref('')
+const loadError = ref('')
+const starting = ref(false)
+const startError = ref('')
+const notice = ref(readNotice())
+
+// QuizView sends a one-time info message (e.g. expired quiz) through history state.
+function readNotice() {
+  const text = window.history.state?.notice
+  if (text) window.history.replaceState({ ...window.history.state, notice: null }, '')
+  return text || ''
+}
 
 async function loadCategories() {
   loading.value = true
-  errorMessage.value = ''
+  loadError.value = ''
   try {
     categories.value = await getCategories()
   } catch (error) {
-    errorMessage.value = error.message
+    loadError.value = errorMessage(error)
   } finally {
     loading.value = false
   }
 }
 
-// Starting a quiz is implemented in Faz 8.
-function onSelect() {}
+async function onSelect(category) {
+  if (starting.value) return
+  starting.value = true
+  startError.value = ''
+  notice.value = ''
+  try {
+    const { quizId } = await quiz.start(category.slug)
+    await router.push({ name: 'quiz', params: { quizId } })
+  } catch (error) {
+    startError.value = errorMessage(error)
+  } finally {
+    starting.value = false
+  }
+}
 
 onMounted(loadCategories)
 </script>
@@ -32,10 +59,13 @@ onMounted(loadCategories)
     <p class="rules">20 soru · her biri 5 saniye · atlamak yok</p>
   </section>
 
+  <p v-if="notice" class="notice" role="status">{{ notice }}</p>
+  <p v-if="startError" class="notice is-error" role="alert">{{ startError }}</p>
+
   <p v-if="loading" class="status" role="status">Kategoriler yükleniyor…</p>
 
-  <div v-else-if="errorMessage" class="error" role="alert">
-    <p>{{ errorMessage }}</p>
+  <div v-else-if="loadError" class="error" role="alert">
+    <p>{{ loadError }}</p>
     <NeonButton @click="loadCategories">Tekrar dene</NeonButton>
   </div>
 
@@ -43,7 +73,7 @@ onMounted(loadCategories)
 
   <ul v-else class="grid">
     <li v-for="category in categories" :key="category.slug">
-      <CategoryCard :category="category" @select="onSelect" />
+      <CategoryCard :category="category" :disabled="starting" @select="onSelect" />
     </li>
   </ul>
 </template>
@@ -69,6 +99,19 @@ h1 {
 .status {
   color: var(--color-text-muted);
   text-align: center;
+}
+
+.notice {
+  margin-bottom: var(--space-6);
+  padding: var(--space-3) var(--space-4);
+  border: 2px solid var(--color-warning);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  text-align: center;
+}
+
+.notice.is-error {
+  border-color: var(--color-wrong);
 }
 
 .error {

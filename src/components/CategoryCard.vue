@@ -15,7 +15,6 @@ defineEmits(['select'])
   >
     <span class="name">{{ category.name }}</span>
     <span class="description">{{ category.description }}</span>
-    <span class="count">{{ category.question_count }} soru</span>
   </button>
 </template>
 
@@ -48,6 +47,12 @@ defineEmits(['select'])
   outline-color: var(--accent);
 }
 
+.category-card:disabled {
+  cursor: wait;
+  opacity: 0.7;
+  transform: none;
+}
+
 .name {
   font-family: var(--font-display);
   font-size: 1.375rem;
@@ -56,11 +61,5 @@ defineEmits(['select'])
 
 .description {
   color: var(--color-text);
-}
-
-.count {
-  color: var(--color-text-muted);
-  font-family: var(--font-mono);
-  font-size: 0.875rem;
 }
 </style>
