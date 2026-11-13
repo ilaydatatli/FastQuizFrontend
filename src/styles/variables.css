@@ -1,0 +1,42 @@
+:root {
+  /* Zemin – orta ton */
+  --color-bg:            #3A3F5C;  /* sayfa arka planı */
+  --color-surface:       #464C6E;  /* kartlar */
+  --color-surface-2:     #525981;  /* hover / iç kutular */
+  --color-border:        #6A7199;
+
+  /* Metin */
+  --color-text:          #F3F4FB;  /* ana metin (zemin üzerinde ~9:1 kontrast) */
+  --color-text-muted:    #C3C7DE;
+
+  /* Neon vurgular – kategori renkleri */
+  --neon-cyan:           #00E5FF;  /* Yazılım */
+  --neon-violet:         #B57BFF;  /* Yapay Zeka */
+  --neon-orange:         #FF9F1C;  /* Ülkeler */
+  --neon-lime:           #B8FF3C;  /* Biyoloji */
+  --neon-pink:           #FF3D9A;  /* Fotoğrafçılık */
+  --neon-blue:           #4DA3FF;  /* Anatomi */
+  --neon-yellow:         #FFE14D;  /* Genel Kültür */
+  --neon-coral:          #FF7759;  /* Psikolojik Deneyler */
+  --neon-teal:           #2EE6C9;  /* Müzik */
+
+  /* Durum renkleri */
+  --color-correct:       #3DFF9A;
+  --color-wrong:         #FF4D6D;
+  --color-warning:       #FFD23F;
+
+  /* Parıltı */
+  --glow-sm: 0 0 6px currentColor;
+  --glow-md: 0 0 12px currentColor, 0 0 24px color-mix(in srgb, currentColor 40%, transparent);
+
+  /* Ölçüler */
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 22px;
+  --space-1: 4px; --space-2: 8px; --space-3: 12px; --space-4: 16px; --space-6: 24px; --space-8: 32px;
+
+  /* Yazı tipleri */
+  --font-display: "Space Grotesk", system-ui, sans-serif;
+  --font-body:    "Inter", system-ui, sans-serif;
+  --font-mono:    "JetBrains Mono", ui-monospace, monospace;
+}
