@@ -1,5 +1,8 @@
 <script setup>
 import { RouterLink } from 'vue-router'
+import { useI18n } from '../composables/useI18n.js'
+
+const { t } = useI18n()
 
 defineProps({
   categories: { type: Array, required: true },
@@ -8,7 +11,7 @@ defineProps({
 </script>
 
 <template>
-  <nav class="tabs" aria-label="Kategoriler">
+  <nav class="tabs" :aria-label="t('leaderboard.categories')">
     <RouterLink
       v-for="category in categories"
       :key="category.slug"

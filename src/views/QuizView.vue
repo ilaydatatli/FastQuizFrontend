@@ -1,6 +1,7 @@
 <script setup>
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { onBeforeRouteLeave, useRoute, useRouter } from 'vue-router'
+import { useI18n } from '../composables/useI18n.js'
 import { errorMessage, useQuiz } from '../composables/useQuiz.js'
 import NeonButton from '../components/NeonButton.vue'
 import QuestionCard from '../components/QuestionCard.vue'
@@ -8,12 +9,11 @@ import QuizHeader from '../components/QuizHeader.vue'
 import TimerBar from '../components/TimerBar.vue'
 
 const FEEDBACK_MS = 700
-const LEAVE_WARNING = "Quiz'den çıkarsan bu deneme yarım kalır. Çıkmak istiyor musun?"
-const NO_QUIZ_NOTICE = 'Bu quiz bulunamadı. Yeni bir quiz başlatabilirsin.'
 
 const route = useRoute()
 const router = useRouter()
 const quiz = useQuiz()
+const { t } = useI18n()
 
 const status = ref('loading') // loading | playing | error
 const errorText = ref('')
@@ -80,7 +80,7 @@ function handleError(error) {
     case 'QUIZ_EXPIRED':
     case 'INVALID_TOKEN':
     case 'QUIZ_NOT_FOUND':
-      leaveToHome(error.message)
+      leaveToHome(errorMessage(error))
       return
     case 'QUESTION_MISMATCH':
     case 'QUESTION_NOT_SHOWN':
@@ -143,7 +143,7 @@ function retry() {
 onMounted(() => {
   const active = quiz.active.value
   if (!active || active.quizId !== route.params.quizId) {
-    leaveToHome(NO_QUIZ_NOTICE)
+    leaveToHome(t('quiz.notFound'))
     return
   }
   window.addEventListener('keydown', onKeydown)
@@ -157,7 +157,7 @@ onBeforeUnmount(() => {
 
 onBeforeRouteLeave(() => {
   if (allowLeave || status.value !== 'playing') return true
-  const ok = window.confirm(LEAVE_WARNING)
+  const ok = window.confirm(t('quiz.leaveWarning'))
   if (ok) quiz.clear()
   return ok
 })
@@ -165,11 +165,11 @@ onBeforeRouteLeave(() => {
 
 <template>
   <section class="quiz" :style="{ '--accent': `var(--neon-${category.color})` }">
-    <p v-if="status === 'loading'" class="status" role="status">Soru yükleniyor…</p>
+    <p v-if="status === 'loading'" class="status" role="status">{{ t('quiz.loading') }}</p>
 
     <div v-else-if="status === 'error'" class="panel error" role="alert">
       <p>{{ errorText }}</p>
-      <NeonButton @click="retry">Tekrar dene</NeonButton>
+      <NeonButton @click="retry">{{ t('common.retry') }}</NeonButton>
     </div>
 
     <template v-else>
@@ -187,7 +187,7 @@ onBeforeRouteLeave(() => {
         :stopped="isLocked"
         @expire="onExpire"
       />
-      <p v-if="timedOut" class="badge" role="status">Süre doldu!</p>
+      <p v-if="timedOut" class="badge" role="status">{{ t('quiz.timeUp') }}</p>
       <QuestionCard
         :question="question"
         :selected-id="selectedId"

@@ -1,6 +1,9 @@
 <script setup>
 import { computed, onMounted, watch } from 'vue'
 import { useCountdown } from '../composables/useCountdown.js'
+import { useI18n } from '../composables/useI18n.js'
+
+const { t } = useI18n()
 
 const props = defineProps({
   durationMs: { type: Number, required: true }, // server remaining_ms
@@ -54,11 +57,11 @@ const seconds = computed(() => (Math.ceil(remainingMs.value / 100) / 10).toFixed
     <div
       class="track"
       role="progressbar"
-      aria-label="Kalan süre"
+      :aria-label="t('quiz.timeLeft')"
       aria-valuemin="0"
       :aria-valuemax="totalMs / 1000"
       :aria-valuenow="Number(seconds)"
-      :aria-valuetext="`${seconds} saniye`"
+      :aria-valuetext="t('quiz.seconds', { value: seconds })"
     >
       <div class="fill" :style="{ transform: `scaleX(${ratio})` }" />
     </div>

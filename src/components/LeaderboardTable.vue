@@ -1,4 +1,8 @@
 <script setup>
+import { FLAGS, useI18n } from '../composables/useI18n.js'
+
+const { t } = useI18n()
+
 const props = defineProps({
   entries: { type: Array, required: true },
   highlight: { type: Object, default: null }, // { rank, nickname } of a just-saved score
@@ -10,15 +14,16 @@ function isHighlighted(entry) {
 </script>
 
 <template>
-  <p v-if="entries.length === 0" class="empty">Henüz skor yok. İlk sen ol! ✨</p>
+  <p v-if="entries.length === 0" class="empty">{{ t('leaderboard.empty') }}</p>
 
   <table v-else class="table">
     <thead>
       <tr>
         <th scope="col" class="rank">#</th>
-        <th scope="col">Takma ad</th>
-        <th scope="col" class="num">Doğru</th>
-        <th scope="col" class="num">Puan</th>
+        <th scope="col">{{ t('leaderboard.nickname') }}</th>
+        <th scope="col" class="flag"><span class="sr-only">{{ t('leaderboard.language') }}</span></th>
+        <th scope="col" class="num">{{ t('leaderboard.correct') }}</th>
+        <th scope="col" class="num">{{ t('leaderboard.points') }}</th>
       </tr>
     </thead>
     <tbody>
@@ -30,7 +35,11 @@ function isHighlighted(entry) {
         <td class="rank">{{ entry.rank }}</td>
         <td class="nickname">
           {{ entry.nickname }}
-          <span v-if="isHighlighted(entry)" class="new-tag">sen</span>
+          <span v-if="isHighlighted(entry)" class="new-tag">{{ t('leaderboard.you') }}</span>
+        </td>
+        <td class="flag">
+          <span aria-hidden="true" :title="t(`languages.${entry.language}`)">{{ FLAGS[entry.language] }}</span>
+          <span class="sr-only">{{ t(`languages.${entry.language}`) }}</span>
         </td>
         <td class="num">{{ entry.correct_count }}</td>
         <td class="num points">{{ entry.points }}</td>
@@ -76,6 +85,13 @@ td:last-child {
 .rank {
   width: 2.5rem;
   font-family: var(--font-mono);
+  text-align: center;
+}
+
+.flag {
+  width: 2rem;
+  padding-left: 0;
+  padding-right: 0;
   text-align: center;
 }
 

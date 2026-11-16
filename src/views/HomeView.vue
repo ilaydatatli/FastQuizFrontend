@@ -1,13 +1,15 @@
 <script setup>
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { getCategories } from '../api/quiz.js'
+import { useI18n } from '../composables/useI18n.js'
 import { errorMessage, useQuiz } from '../composables/useQuiz.js'
 import CategoryCard from '../components/CategoryCard.vue'
 import NeonButton from '../components/NeonButton.vue'
 
 const router = useRouter()
 const quiz = useQuiz()
+const { t, locale } = useI18n()
 
 const categories = ref([])
 const loading = ref(true)
@@ -27,7 +29,7 @@ async function loadCategories() {
   loading.value = true
   loadError.value = ''
   try {
-    categories.value = await getCategories()
+    categories.value = await getCategories(locale.value)
   } catch (error) {
     loadError.value = errorMessage(error)
   } finally {
@@ -51,25 +53,27 @@ async function onSelect(category) {
 }
 
 onMounted(loadCategories)
+// Category names and the playable list depend on the language.
+watch(locale, loadCategories)
 </script>
 
 <template>
   <section class="hero">
-    <h1>Hızlı düşün, hızlı cevapla.</h1>
-    <p class="rules">20 soru · her biri 10 saniye · atlamak yok</p>
+    <h1>{{ t('home.title') }}</h1>
+    <p class="rules">{{ t('home.rules') }}</p>
   </section>
 
   <p v-if="notice" class="notice" role="status">{{ notice }}</p>
   <p v-if="startError" class="notice is-error" role="alert">{{ startError }}</p>
 
-  <p v-if="loading" class="status" role="status">Kategoriler yükleniyor…</p>
+  <p v-if="loading" class="status" role="status">{{ t('home.loading') }}</p>
 
   <div v-else-if="loadError" class="error" role="alert">
     <p>{{ loadError }}</p>
-    <NeonButton @click="loadCategories">Tekrar dene</NeonButton>
+    <NeonButton @click="loadCategories">{{ t('common.retry') }}</NeonButton>
   </div>
 
-  <p v-else-if="categories.length === 0" class="status">Şu an oynanabilir kategori yok.</p>
+  <p v-else-if="categories.length === 0" class="status">{{ t('home.empty') }}</p>
 
   <ul v-else class="grid">
     <li v-for="category in categories" :key="category.slug">

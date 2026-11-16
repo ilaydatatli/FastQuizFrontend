@@ -3,12 +3,13 @@ import { apiFetch } from './client.js'
 
 const enc = encodeURIComponent
 
-export function getCategories() {
-  return apiFetch('/categories/')
+export function getCategories(language) {
+  return apiFetch(`/categories/?lang=${enc(language)}`)
 }
 
-export function startQuiz(categorySlug) {
-  return apiFetch('/quizzes/', { method: 'POST', body: { category: categorySlug } })
+// The quiz keeps this language until it ends (the server stores it).
+export function startQuiz(categorySlug, language) {
+  return apiFetch('/quizzes/', { method: 'POST', body: { category: categorySlug, language } })
 }
 
 export function getCurrent(quizId, token) {
@@ -32,6 +33,6 @@ export function saveScore(quizId, token, nickname) {
   return apiFetch(`/quizzes/${enc(quizId)}/score/`, { method: 'POST', token, body: { nickname } })
 }
 
-export function getLeaderboard(categorySlug) {
-  return apiFetch(`/leaderboard/${enc(categorySlug)}/`)
+export function getLeaderboard(categorySlug, language) {
+  return apiFetch(`/leaderboard/${enc(categorySlug)}/?lang=${enc(language)}`)
 }

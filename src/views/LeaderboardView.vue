@@ -2,6 +2,7 @@
 import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { getCategories, getLeaderboard } from '../api/quiz.js'
+import { useI18n } from '../composables/useI18n.js'
 import { errorMessage } from '../composables/useQuiz.js'
 import CategoryTabs from '../components/CategoryTabs.vue'
 import LeaderboardTable from '../components/LeaderboardTable.vue'
@@ -9,6 +10,7 @@ import NeonButton from '../components/NeonButton.vue'
 
 const route = useRoute()
 const router = useRouter()
+const { t, locale } = useI18n()
 
 const categories = ref([])
 const board = ref(null)
@@ -31,13 +33,13 @@ async function load(slug) {
   loading.value = true
   errorText.value = ''
   try {
-    if (categories.value.length === 0) categories.value = await getCategories()
+    if (categories.value.length === 0) categories.value = await getCategories(locale.value)
     if (!slug) {
       const first = categories.value[0]
       if (first) router.replace({ name: 'leaderboard', params: { slug: first.slug } })
       return
     }
-    board.value = await getLeaderboard(slug)
+    board.value = await getLeaderboard(slug, locale.value)
   } catch (error) {
     board.value = null
     errorText.value = errorMessage(error)
@@ -55,30 +57,41 @@ watch(
   },
   { immediate: true },
 )
+
+// Tab names and the category title depend on the language; scores are shared.
+watch(locale, () => {
+  categories.value = []
+  load(route.params.slug)
+})
 </script>
 
 <template>
   <section class="leaderboard">
-    <h1>Skor Tablosu</h1>
+    <h1>{{ t('leaderboard.title') }}</h1>
 
     <CategoryTabs :categories="categories" :active-slug="route.params.slug || ''" />
 
     <p v-if="highlight && highlight.rank > 10" class="notice" role="status">
-      Skorun kaydedildi! Sıran: {{ highlight.rank }}. İlk 10'a girmek için bir daha dene 💪
+      {{ t('leaderboard.savedBeyondTop', { rank: highlight.rank }) }}
     </p>
     <p v-else-if="highlight && keptOlderBest" class="notice" role="status">
-      Skorun ({{ highlight.points }}) kaydedildi. Tabloda daha yüksek olan {{ keptOlderBest }} puanın
-      duruyor, {{ highlight.rank }}. sıradasın 💪
+      {{
+        t('leaderboard.savedKeptOlder', {
+          points: highlight.points,
+          best: keptOlderBest,
+          rank: highlight.rank,
+        })
+      }}
     </p>
     <p v-else-if="highlight" class="notice is-good" role="status">
-      Skorun kaydedildi! {{ highlight.rank }}. sıradasın 🎉
+      {{ t('leaderboard.saved', { rank: highlight.rank }) }}
     </p>
 
-    <p v-if="loading" class="status" role="status">Yükleniyor…</p>
+    <p v-if="loading" class="status" role="status">{{ t('common.loading') }}</p>
 
     <div v-else-if="errorText" class="error" role="alert">
       <p>{{ errorText }}</p>
-      <NeonButton v-if="canRetry" @click="load(route.params.slug)">Tekrar dene</NeonButton>
+      <NeonButton v-if="canRetry" @click="load(route.params.slug)">{{ t('common.retry') }}</NeonButton>
     </div>
 
     <div
@@ -87,8 +100,10 @@ watch(
       :style="{ '--accent': `var(--neon-${board.category.color})` }"
     >
       <LeaderboardTable :entries="board.entries" :highlight="highlight" />
-      <RouterLink to="/" class="play">Oynamaya başla →</RouterLink>
+      <RouterLink to="/" class="play">{{ t('leaderboard.play') }}</RouterLink>
     </div>
+
+    <p v-else-if="categories.length === 0" class="status">{{ t('leaderboard.noCategories') }}</p>
   </section>
 </template>
 

@@ -1,4 +1,8 @@
 <script setup>
+import { useI18n } from '../composables/useI18n.js'
+
+const { t } = useI18n()
+
 defineProps({
   categoryName: { type: String, required: true },
   number: { type: Number, required: true }, // 1-based question number
@@ -14,7 +18,7 @@ defineProps({
       <span aria-hidden="true"> · </span>
       <span class="count">{{ number }} / {{ total }}</span>
     </p>
-    <p class="points">{{ points }} <span class="unit">puan</span></p>
+    <p class="points">{{ points }} <span class="unit">{{ t('common.points') }}</span></p>
   </div>
 </template>
 

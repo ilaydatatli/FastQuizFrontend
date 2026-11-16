@@ -1,4 +1,8 @@
 <script setup>
+import { useI18n } from '../composables/useI18n.js'
+
+const { t } = useI18n()
+
 defineProps({
   index: { type: Number, required: true }, // 1–4, also the keyboard shortcut
   text: { type: String, required: true },
@@ -22,10 +26,10 @@ defineEmits(['choose'])
     <span class="key" aria-hidden="true">{{ index }}</span>
     <span class="text">{{ text }}</span>
     <span v-if="state === 'correct'" class="icon">
-      <span aria-hidden="true">✓</span><span class="sr-only">Doğru cevap</span>
+      <span aria-hidden="true">✓</span><span class="sr-only">{{ t('quiz.correctAnswer') }}</span>
     </span>
     <span v-else-if="state === 'wrong'" class="icon">
-      <span aria-hidden="true">✗</span><span class="sr-only">Yanlış cevap</span>
+      <span aria-hidden="true">✗</span><span class="sr-only">{{ t('quiz.wrongAnswer') }}</span>
     </span>
   </button>
 </template>

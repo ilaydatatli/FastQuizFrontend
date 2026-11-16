@@ -1,11 +1,18 @@
 <script setup>
 import { RouterLink, RouterView } from 'vue-router'
+import LanguageSwitcher from './components/LanguageSwitcher.vue'
+import { useI18n } from './composables/useI18n.js'
+
+const { t } = useI18n()
 </script>
 
 <template>
   <header class="topbar">
     <RouterLink to="/" class="logo">FAST QUIZ</RouterLink>
-    <RouterLink :to="{ name: 'leaderboard' }" class="nav-link">Skor Tablosu</RouterLink>
+    <div class="actions">
+      <RouterLink :to="{ name: 'leaderboard' }" class="nav-link">{{ t('nav.leaderboard') }}</RouterLink>
+      <LanguageSwitcher />
+    </div>
   </header>
   <main class="page">
     <RouterView />
@@ -32,6 +39,12 @@ import { RouterLink, RouterView } from 'vue-router'
   text-shadow: var(--glow-sm);
 }
 
+.actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
 .nav-link {
   color: var(--color-text-muted);
   font-family: var(--font-display);
@@ -42,6 +55,26 @@ import { RouterLink, RouterView } from 'vue-router'
 .nav-link:hover,
 .nav-link.router-link-active {
   color: var(--color-text);
+}
+
+/* Narrow phones: logo + menu + language switcher must fit on one line */
+@media (max-width: 420px) {
+  .topbar {
+    gap: var(--space-3);
+  }
+
+  .logo {
+    font-size: 1.15rem;
+    letter-spacing: 0.04em;
+  }
+
+  .actions {
+    gap: var(--space-2);
+  }
+
+  .nav-link {
+    font-size: 0.875rem;
+  }
 }
 
 .page {

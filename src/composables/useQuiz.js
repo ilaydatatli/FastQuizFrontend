@@ -1,8 +1,8 @@
 import { ref } from 'vue'
 import { getCurrent, startQuiz, submitAnswer } from '../api/quiz.js'
+import { translate, useI18n } from './useI18n.js'
 
 const STORAGE_KEY = 'fastquiz.active'
-const RATE_LIMIT_MESSAGE = 'Biraz yavaşla, birazdan tekrar dene.'
 
 // sessionStorage (not localStorage): closing the tab should end the quiz.
 function readActive() {
@@ -23,17 +23,21 @@ function writeActive(value) {
   }
 }
 
-// The text the UI shows for an ApiError.
-export function errorMessage(error) {
-  if (error?.status === 429) return RATE_LIMIT_MESSAGE
-  return error?.message || 'Beklenmeyen bir hata oluştu.'
+// The text the UI shows for an ApiError, in the current language, chosen by `code`.
+// The server's Turkish `message` is only a fallback for codes the dictionary does not know.
+export function errorMessage(error, language = useI18n().locale.value) {
+  const code = error?.status === 429 ? 'RATE_LIMITED' : error?.code
+  const key = `errors.${code}`
+  const text = translate(language, key)
+  if (text !== key) return text
+  return error?.message || translate(language, 'errors.UNKNOWN_ERROR')
 }
 
 export function useQuiz() {
   const active = ref(readActive())
 
   async function start(categorySlug) {
-    const data = await startQuiz(categorySlug)
+    const data = await startQuiz(categorySlug, useI18n().locale.value)
     const value = { quizId: data.quiz_id, token: data.token, category: data.category }
     writeActive(value)
     active.value = value

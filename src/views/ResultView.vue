@@ -2,14 +2,14 @@
 import { onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { getResult, saveScore } from '../api/quiz.js'
+import { useI18n } from '../composables/useI18n.js'
 import { errorMessage, useQuiz } from '../composables/useQuiz.js'
 import NeonButton from '../components/NeonButton.vue'
-
-const NO_QUIZ_NOTICE = 'Bu sonuç bulunamadı. Yeni bir quiz başlatabilirsin.'
 
 const route = useRoute()
 const router = useRouter()
 const quiz = useQuiz()
+const { t } = useI18n()
 
 // Set by QuizView when the quiz finished (see useQuiz.finish).
 const saved = window.history.state?.quiz ?? null
@@ -34,7 +34,7 @@ async function load() {
     result.value = await getResult(quizId, saved.token)
   } catch (error) {
     if (['QUIZ_EXPIRED', 'INVALID_TOKEN', 'QUIZ_NOT_FOUND'].includes(error.code)) {
-      leaveToHome(error.message)
+      leaveToHome(errorMessage(error))
       return
     }
     loadError.value = errorMessage(error)
@@ -57,9 +57,9 @@ async function onSave() {
     })
   } catch (error) {
     if (error.code === 'NICKNAME_INVALID' || error.code === 'VALIDATION_ERROR') {
-      nicknameError.value = error.message
+      nicknameError.value = errorMessage(error)
     } else if (error.code === 'SCORE_ALREADY_SAVED') {
-      formError.value = error.message
+      formError.value = errorMessage(error)
       result.value = { ...result.value, score_saved: true }
     } else {
       formError.value = errorMessage(error)
@@ -89,7 +89,7 @@ async function onReplay() {
 
 onMounted(() => {
   if (!saved?.token) {
-    leaveToHome(NO_QUIZ_NOTICE)
+    leaveToHome(t('result.notFound'))
     return
   }
   load()
@@ -102,60 +102,62 @@ onMounted(() => {
     class="result"
     :style="{ '--accent': `var(--neon-${saved.category.color})` }"
   >
-    <p v-if="loading" class="status" role="status">Sonuç yükleniyor…</p>
+    <p v-if="loading" class="status" role="status">{{ t('result.loading') }}</p>
 
     <div v-else-if="loadError" class="panel" role="alert">
       <p>{{ loadError }}</p>
-      <NeonButton @click="load">Tekrar dene</NeonButton>
+      <NeonButton @click="load">{{ t('common.retry') }}</NeonButton>
     </div>
 
     <div v-else-if="result" class="panel">
       <p class="category">{{ result.category.name }}</p>
-      <h1 class="points">{{ result.points }} <span class="unit">puan</span></h1>
-      <p class="correct">{{ result.correct_count }} / {{ result.total_questions }} doğru</p>
+      <h1 class="points">{{ result.points }} <span class="unit">{{ t('common.points') }}</span></h1>
+      <p class="correct">
+        {{ t('result.correct', { correct: result.correct_count, total: result.total_questions }) }}
+      </p>
       <p v-if="result.timed_out_count > 0" class="muted">
-        {{ result.timed_out_count }} soruda süre doldu
+        {{ t('result.timedOut', { count: result.timed_out_count }) }}
       </p>
       <p v-if="result.qualifies_for_top10 && !result.score_saved" class="badge">
-        İlk 10'a girdin! 🏆
+        {{ t('result.top10') }}
       </p>
 
       <p v-if="result.score_saved" class="saved" role="status">
-        Bu skor kaydedildi ✓
+        {{ t('result.saved') }}
       </p>
 
       <form v-else class="form" novalidate @submit.prevent="onSave">
-        <label for="nickname">Takma ad</label>
+        <label for="nickname">{{ t('result.nickname') }}</label>
         <input
           id="nickname"
           v-model="nickname"
           type="text"
           maxlength="16"
           autocomplete="nickname"
-          placeholder="2–16 karakter"
+          :placeholder="t('result.nicknamePlaceholder')"
           :aria-invalid="nicknameError ? 'true' : 'false'"
           :aria-describedby="nicknameError ? 'nickname-error' : undefined"
         />
         <p v-if="nicknameError" id="nickname-error" class="field-error" role="alert">
           {{ nicknameError }}
         </p>
-        <NeonButton type="submit" :disabled="busy">Kaydet</NeonButton>
+        <NeonButton type="submit" :disabled="busy">{{ t('result.save') }}</NeonButton>
       </form>
 
       <p v-if="formError" class="field-error" role="alert">{{ formError }}</p>
 
       <div class="actions">
         <button v-if="!result.score_saved" type="button" class="link" @click="onSkip">
-          Kaydetmeden geç
+          {{ t('result.skip') }}
         </button>
         <RouterLink
           v-else
           class="link"
           :to="{ name: 'leaderboard', params: { slug: saved.category.slug } }"
         >
-          Skor tablosu
+          {{ t('result.leaderboard') }}
         </RouterLink>
-        <button type="button" class="link" :disabled="busy" @click="onReplay">Tekrar oyna</button>
+        <button type="button" class="link" :disabled="busy" @click="onReplay">{{ t('result.replay') }}</button>
       </div>
     </div>
   </section>
