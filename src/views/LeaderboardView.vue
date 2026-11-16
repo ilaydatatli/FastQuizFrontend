@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { getCategories, getLeaderboard } from '../api/quiz.js'
 import { errorMessage } from '../composables/useQuiz.js'
@@ -17,6 +17,15 @@ const errorText = ref('')
 const canRetry = ref(true)
 // Set by ResultView right after a score is saved.
 const highlight = ref(window.history.state?.highlight ?? null)
+
+// One row per nickname: if the player already had a better score, that row stays.
+const keptOlderBest = computed(() => {
+  if (!highlight.value || !board.value) return null
+  const row = board.value.entries.find(
+    (e) => e.rank === highlight.value.rank && e.nickname === highlight.value.nickname,
+  )
+  return row && row.points > highlight.value.points ? row.points : null
+})
 
 async function load(slug) {
   loading.value = true
@@ -56,6 +65,10 @@ watch(
 
     <p v-if="highlight && highlight.rank > 10" class="notice" role="status">
       Skorun kaydedildi! Sıran: {{ highlight.rank }}. İlk 10'a girmek için bir daha dene 💪
+    </p>
+    <p v-else-if="highlight && keptOlderBest" class="notice" role="status">
+      Skorun ({{ highlight.points }}) kaydedildi. Tabloda daha yüksek olan {{ keptOlderBest }} puanın
+      duruyor, {{ highlight.rank }}. sıradasın 💪
     </p>
     <p v-else-if="highlight" class="notice is-good" role="status">
       Skorun kaydedildi! {{ highlight.rank }}. sıradasın 🎉

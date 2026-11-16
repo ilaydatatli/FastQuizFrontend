@@ -56,7 +56,7 @@ onMounted(loadCategories)
 <template>
   <section class="hero">
     <h1>Hızlı düşün, hızlı cevapla.</h1>
-    <p class="rules">20 soru · her biri 5 saniye · atlamak yok</p>
+    <p class="rules">20 soru · her biri 10 saniye · atlamak yok</p>
   </section>
 
   <p v-if="notice" class="notice" role="status">{{ notice }}</p>

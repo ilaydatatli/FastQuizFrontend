@@ -4,7 +4,7 @@ import { useCountdown } from '../composables/useCountdown.js'
 
 const props = defineProps({
   durationMs: { type: Number, required: true }, // server remaining_ms
-  totalMs: { type: Number, default: 5000 }, // server time_limit_ms
+  totalMs: { type: Number, default: 10000 }, // server time_limit_ms
   color: { type: String, default: 'cyan' }, // category color key
   stopped: { type: Boolean, default: false },
 })
