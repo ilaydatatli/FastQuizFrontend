@@ -1,13 +1,14 @@
 import { ref } from 'vue'
 import en from '../i18n/en.js'
 import es from '../i18n/es.js'
+import nl from '../i18n/nl.js'
 import tr from '../i18n/tr.js'
 
-export const LANGUAGES = ['tr', 'en', 'es']
+export const LANGUAGES = ['tr', 'en', 'nl', 'es']
 export const DEFAULT_LANGUAGE = 'tr'
-export const FLAGS = { tr: '🇹🇷', en: '🇬🇧', es: '🇪🇸' }
+export const FLAGS = { tr: '🇹🇷', en: '🇬🇧', nl: '🇳🇱', es: '🇪🇸' }
 
-const dictionaries = { tr, en, es }
+const dictionaries = { tr, en, nl, es }
 const STORAGE_KEY = 'fastquiz.lang' // a preference, so localStorage is fine here
 
 /** Saved choice -> device/browser language -> Turkish. */

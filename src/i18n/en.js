@@ -1,5 +1,5 @@
 export default {
-  languages: { tr: 'Türkçe', en: 'English', es: 'Español' },
+  languages: { tr: 'Türkçe', en: 'English', nl: 'Nederlands', es: 'Español' },
   nav: { leaderboard: 'Leaderboard', language: 'Language' },
   common: { retry: 'Try again', loading: 'Loading…', points: 'points', backHome: 'Back to home' },
   home: {

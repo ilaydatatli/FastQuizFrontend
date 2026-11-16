@@ -3,6 +3,7 @@ import { detectLanguage, translate } from '../src/composables/useI18n.js'
 import { errorMessage } from '../src/composables/useQuiz.js'
 import en from '../src/i18n/en.js'
 import es from '../src/i18n/es.js'
+import nl from '../src/i18n/nl.js'
 import tr from '../src/i18n/tr.js'
 
 // Flatten {a: {b: 'x'}} -> {'a.b': 'x'}
@@ -20,7 +21,7 @@ function placeholders(text) {
 describe('dictionaries', () => {
   const base = flatten(tr)
 
-  for (const [name, dictionary] of Object.entries({ en, es })) {
+  for (const [name, dictionary] of Object.entries({ en, nl, es })) {
     it(`${name} has exactly the same keys as tr`, () => {
       expect(Object.keys(flatten(dictionary)).sort()).toEqual(Object.keys(base).sort())
     })
@@ -46,6 +47,7 @@ describe('detectLanguage', () => {
   it('uses the first supported device language', () => {
     expect(detectLanguage(null, ['de-DE', 'es-MX', 'en-US'])).toBe('es')
     expect(detectLanguage(null, ['TR-tr'])).toBe('tr')
+    expect(detectLanguage(null, ['nl-BE', 'en'])).toBe('nl')
   })
 
   it('falls back to Turkish', () => {

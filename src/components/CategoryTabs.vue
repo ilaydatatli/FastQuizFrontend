@@ -1,17 +1,30 @@
 <script setup>
+import { nextTick, ref, watch } from 'vue'
 import { RouterLink } from 'vue-router'
 import { useI18n } from '../composables/useI18n.js'
 
 const { t } = useI18n()
 
-defineProps({
+const props = defineProps({
   categories: { type: Array, required: true },
   activeSlug: { type: String, default: '' },
 })
+
+// On narrow screens the tabs scroll sideways: keep the active one in view.
+const nav = ref(null)
+watch(
+  () => [props.activeSlug, props.categories.length],
+  async () => {
+    await nextTick()
+    const active = nav.value?.querySelector('.is-active')
+    active?.scrollIntoView?.({ block: 'nearest', inline: 'center' })
+  },
+  { immediate: true },
+)
 </script>
 
 <template>
-  <nav class="tabs" :aria-label="t('leaderboard.categories')">
+  <nav ref="nav" class="tabs" :aria-label="t('leaderboard.categories')">
     <RouterLink
       v-for="category in categories"
       :key="category.slug"

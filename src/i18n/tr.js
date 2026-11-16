@@ -1,6 +1,6 @@
 // Turkish (default). Every key must also exist in en.js and es.js (checked by tests/i18n.spec.js).
 export default {
-  languages: { tr: 'Türkçe', en: 'English', es: 'Español' },
+  languages: { tr: 'Türkçe', en: 'English', nl: 'Nederlands', es: 'Español' },
   nav: { leaderboard: 'Skor Tablosu', language: 'Dil' },
   common: { retry: 'Tekrar dene', loading: 'Yükleniyor…', points: 'puan', backHome: 'Ana sayfaya dön' },
   home: {
