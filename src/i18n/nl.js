@@ -48,6 +48,13 @@ export default {
     play: 'Begin met spelen →',
   },
   notFound: { title: 'Pagina niet gevonden', text: 'De pagina die je zoekt bestaat niet.' },
+  install: {
+    label: 'App installeren',
+    iosTitle: 'Zet op je beginscherm',
+    iosStep1: 'Tik op de deelknop van je browser',
+    iosStep2: 'Kies „Zet op beginscherm”',
+    close: 'Sluiten',
+  },
   errors: {
     NETWORK_ERROR: 'Kan de server niet bereiken.',
     RATE_LIMITED: 'Doe het even rustiger aan en probeer het zo opnieuw.',

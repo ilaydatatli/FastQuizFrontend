@@ -48,6 +48,13 @@ export default {
     play: 'Empezar a jugar →',
   },
   notFound: { title: 'Página no encontrada', text: 'La página que buscas no está aquí.' },
+  install: {
+    label: 'Instalar la app',
+    iosTitle: 'Añádela a tu pantalla de inicio',
+    iosStep1: 'Toca el botón Compartir del navegador',
+    iosStep2: 'Elige «Añadir a pantalla de inicio»',
+    close: 'Cerrar',
+  },
   errors: {
     NETWORK_ERROR: 'No se puede conectar con el servidor.',
     RATE_LIMITED: 'Ve un poco más despacio e inténtalo de nuevo pronto.',

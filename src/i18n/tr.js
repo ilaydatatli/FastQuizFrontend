@@ -49,6 +49,13 @@ export default {
     play: 'Oynamaya başla →',
   },
   notFound: { title: 'Sayfa bulunamadı', text: 'Aradığın sayfa burada değil.' },
+  install: {
+    label: 'Uygulamayı yükle',
+    iosTitle: 'Ana ekrana ekle',
+    iosStep1: 'Tarayıcıdaki Paylaş düğmesine dokun',
+    iosStep2: '“Ana Ekrana Ekle”yi seç',
+    close: 'Kapat',
+  },
   errors: {
     NETWORK_ERROR: 'Sunucuya ulaşılamadı.',
     RATE_LIMITED: 'Biraz yavaşla, birazdan tekrar dene.',

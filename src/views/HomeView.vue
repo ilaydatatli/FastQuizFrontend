@@ -5,6 +5,7 @@ import { getCategories } from '../api/quiz.js'
 import { useI18n } from '../composables/useI18n.js'
 import { errorMessage, useQuiz } from '../composables/useQuiz.js'
 import CategoryCard from '../components/CategoryCard.vue'
+import InstallButton from '../components/InstallButton.vue'
 import NeonButton from '../components/NeonButton.vue'
 
 const router = useRouter()
@@ -61,6 +62,7 @@ watch(locale, loadCategories)
   <section class="hero">
     <h1>{{ t('home.title') }}</h1>
     <p class="rules">{{ t('home.rules') }}</p>
+    <InstallButton />
   </section>
 
   <p v-if="notice" class="notice" role="status">{{ notice }}</p>

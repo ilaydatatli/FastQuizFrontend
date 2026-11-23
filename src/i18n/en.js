@@ -48,6 +48,13 @@ export default {
     play: 'Start playing →',
   },
   notFound: { title: 'Page not found', text: "The page you're looking for isn't here." },
+  install: {
+    label: 'Install the app',
+    iosTitle: 'Add to your home screen',
+    iosStep1: 'Tap the browser\'s Share button',
+    iosStep2: 'Choose “Add to Home Screen”',
+    close: 'Close',
+  },
   errors: {
     NETWORK_ERROR: "Can't reach the server.",
     RATE_LIMITED: 'Slow down a little and try again soon.',
