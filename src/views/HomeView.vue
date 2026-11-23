@@ -1,10 +1,11 @@
 <script setup>
 import { onMounted, ref, watch } from 'vue'
-import { useRouter } from 'vue-router'
+import { RouterLink, useRouter } from 'vue-router'
 import { getCategories } from '../api/quiz.js'
 import { useI18n } from '../composables/useI18n.js'
 import { usePlayer } from '../composables/usePlayer.js'
 import { errorMessage, useQuiz } from '../composables/useQuiz.js'
+import { cleanRoomCode, isRoomCode } from '../composables/room.js'
 import CategoryCard from '../components/CategoryCard.vue'
 import InstallButton from '../components/InstallButton.vue'
 import NeonButton from '../components/NeonButton.vue'
@@ -20,6 +21,18 @@ const loadError = ref('')
 const starting = ref(false)
 const startError = ref('')
 const notice = ref(readNotice())
+const roomCode = ref('')
+const roomCodeError = ref('')
+
+function onJoinRoom() {
+  const code = cleanRoomCode(roomCode.value)
+  if (!isRoomCode(code)) {
+    roomCodeError.value = t('room.codeInvalid')
+    return
+  }
+  roomCodeError.value = ''
+  router.push({ name: 'room', params: { code } })
+}
 
 // QuizView sends a one-time info message (e.g. expired quiz) through history state.
 function readNotice() {
@@ -71,6 +84,30 @@ watch(locale, loadCategories)
     <InstallButton />
   </section>
 
+  <section class="friends" :aria-label="t('room.newTitle')">
+    <RouterLink :to="{ name: 'room-new' }" class="create">👥 {{ t('room.newTitle') }}</RouterLink>
+    <p class="hint">{{ t('room.homeHint') }}</p>
+    <form class="join" novalidate @submit.prevent="onJoinRoom">
+      <label for="room-code" class="join-label">{{ t('room.haveCode') }}</label>
+      <div class="join-row">
+        <input
+          id="room-code"
+          v-model="roomCode"
+          class="join-input"
+          maxlength="8"
+          autocomplete="off"
+          autocapitalize="characters"
+          spellcheck="false"
+          placeholder="KEDI42"
+          :aria-invalid="roomCodeError ? 'true' : undefined"
+          aria-describedby="room-code-error"
+        />
+        <button type="submit" class="join-button">{{ t('room.join') }}</button>
+      </div>
+      <p id="room-code-error" class="join-error" role="alert">{{ roomCodeError }}</p>
+    </form>
+  </section>
+
   <p v-if="notice" class="notice" role="status">{{ notice }}</p>
   <p v-if="startError" class="notice is-error" role="alert">{{ startError }}</p>
 
@@ -105,6 +142,78 @@ watch(locale, loadCategories)
   font: inherit;
   text-decoration: underline;
   cursor: pointer;
+}
+
+.friends {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  margin: 0 auto var(--space-8);
+  padding: var(--space-4);
+  max-width: 480px;
+  border: 2px dashed var(--color-border);
+  border-radius: var(--radius-lg);
+  text-align: center;
+}
+
+.create {
+  color: var(--neon-cyan);
+  font-family: var(--font-display);
+  font-size: 1.125rem;
+  font-weight: 700;
+}
+
+.hint {
+  margin-top: calc(-1 * var(--space-2));
+  color: var(--color-text-muted);
+  font-size: 0.875rem;
+}
+
+.join {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.join-label {
+  color: var(--color-text-muted);
+  font-size: 0.875rem;
+}
+
+.join-row {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.join-input {
+  flex: 1;
+  min-width: 0;
+  padding: var(--space-2) var(--space-3);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.join-button {
+  padding: var(--space-2) var(--space-4);
+  border: 2px solid var(--neon-cyan);
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--neon-cyan);
+  font-family: var(--font-display);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.join-error {
+  min-height: 1.25em;
+  color: var(--color-wrong);
+  font-size: 0.875rem;
 }
 
 .hero {

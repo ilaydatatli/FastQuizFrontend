@@ -155,7 +155,14 @@ onMounted(() => {
         </template>
       </div>
 
-      <NeonButton :disabled="busy" @click="onReplay">{{ t('result.replay') }}</NeonButton>
+      <!-- Room quiz: the friends' board comes first; a room is played once, so "again" is a normal quiz. -->
+      <NeonButton v-if="result?.room" @click="router.push({ name: 'room', params: { code: result.room } })">
+        {{ t('room.board') }} 👥
+      </NeonButton>
+      <NeonButton v-else :disabled="busy" @click="onReplay">{{ t('result.replay') }}</NeonButton>
+      <button v-if="result?.room" type="button" class="link" :disabled="busy" @click="onReplay">
+        {{ t('result.replay') }}
+      </button>
       <p v-if="replayError" class="field-error" role="alert">{{ replayError }}</p>
       <button type="button" class="link" @click="goToLeaderboard">{{ t('result.leaderboard') }}</button>
     </div>

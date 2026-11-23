@@ -1,5 +1,5 @@
 import { ref } from 'vue'
-import { getCurrent, startQuiz, submitAnswer } from '../api/quiz.js'
+import { getCurrent, joinRoom, startQuiz, submitAnswer } from '../api/quiz.js'
 import { translate, useI18n } from './useI18n.js'
 
 const STORAGE_KEY = 'fastquiz.active'
@@ -36,12 +36,20 @@ export function errorMessage(error, language = useI18n().locale.value) {
 export function useQuiz() {
   const active = ref(readActive())
 
-  async function start(categorySlug) {
-    const data = await startQuiz(categorySlug, useI18n().locale.value)
+  function remember(data) {
     const value = { quizId: data.quiz_id, token: data.token, category: data.category }
     writeActive(value)
     active.value = value
     return value
+  }
+
+  async function start(categorySlug) {
+    return remember(await startQuiz(categorySlug, useI18n().locale.value))
+  }
+
+  // Room quiz: the room's questions, in the player's own language.
+  async function startRoom(code, nickname) {
+    return remember(await joinRoom(code, nickname, useI18n().locale.value))
   }
 
   function current() {
@@ -66,5 +74,5 @@ export function useQuiz() {
     return { token, category: { slug: category.slug, name: category.name, color: category.color } }
   }
 
-  return { active, start, current, answer, clear, finish }
+  return { active, start, startRoom, current, answer, clear, finish }
 }

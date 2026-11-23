@@ -14,6 +14,16 @@ const routes = [
     component: () => import('../views/ResultView.vue'),
   },
   {
+    path: '/room/new',
+    name: 'room-new',
+    component: () => import('../views/RoomNewView.vue'),
+  },
+  {
+    path: '/room/:code',
+    name: 'room',
+    component: () => import('../views/RoomView.vue'),
+  },
+  {
     path: '/leaderboard/:slug?',
     name: 'leaderboard',
     component: () => import('../views/LeaderboardView.vue'),

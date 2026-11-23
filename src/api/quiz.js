@@ -43,3 +43,18 @@ export function getOverallLeaderboard() {
 export function getLeaderboard(categorySlug, language) {
   return apiFetch(`/leaderboard/${enc(categorySlug)}/?lang=${enc(language)}`)
 }
+
+// Challenge rooms (Faz 24/25): friends play the same questions, each once, in their own language.
+export function createRoom(categorySlug, language) {
+  return apiFetch(`/rooms/?lang=${enc(language)}`, { method: 'POST', body: { category: categorySlug } })
+}
+
+export function getRoom(code, language) {
+  return apiFetch(`/rooms/${enc(code)}/?lang=${enc(language)}`)
+}
+
+// Same response as startQuiz, plus `room`.
+export function joinRoom(code, nickname, language) {
+  return apiFetch(`/rooms/${enc(code)}/quizzes/`, { method: 'POST', body: { nickname, language } })
+}
+
