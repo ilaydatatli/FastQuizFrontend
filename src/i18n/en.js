@@ -36,6 +36,9 @@ export default {
   },
   leaderboard: {
     title: 'Leaderboard',
+    overall: 'Overall',
+    overallNote: "The sum of each player's best score in every category. More categories, more points! 🚀",
+    categoriesPlayed: 'Categories',
     categories: 'Categories',
     empty: 'No scores yet. Be the first! ✨',
     noCategories: 'No categories in this language yet.',

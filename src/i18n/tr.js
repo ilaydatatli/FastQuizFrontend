@@ -37,6 +37,9 @@ export default {
   },
   leaderboard: {
     title: 'Skor Tablosu',
+    overall: 'Genel',
+    overallNote: 'Her kategorideki en iyi skorların toplamı. Ne kadar çok kategori, o kadar yüksek puan! 🚀',
+    categoriesPlayed: 'Kategori',
     categories: 'Kategoriler',
     empty: 'Henüz skor yok. İlk sen ol! ✨',
     noCategories: 'Bu dilde henüz kategori yok.',

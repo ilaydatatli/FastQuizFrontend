@@ -36,6 +36,9 @@ export default {
   },
   leaderboard: {
     title: 'Scorebord',
+    overall: 'Totaal',
+    overallNote: 'De som van de beste score per categorie. Hoe meer categorieën, hoe meer punten! 🚀',
+    categoriesPlayed: 'Categorieën',
     categories: 'Categorieën',
     empty: 'Nog geen scores. Wees de eerste! ✨',
     noCategories: 'Nog geen categorieën in deze taal.',

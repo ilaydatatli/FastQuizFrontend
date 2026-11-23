@@ -1,6 +1,7 @@
 <script setup>
 import { nextTick, ref, watch } from 'vue'
 import { RouterLink } from 'vue-router'
+import { OVERALL_SLUG } from '../api/quiz.js'
 import { useI18n } from '../composables/useI18n.js'
 
 const { t } = useI18n()
@@ -25,6 +26,15 @@ watch(
 
 <template>
   <nav ref="nav" class="tabs" :aria-label="t('leaderboard.categories')">
+    <RouterLink
+      class="tab"
+      :class="{ 'is-active': activeSlug === OVERALL_SLUG }"
+      :style="{ '--accent': 'var(--color-text)' }"
+      :to="{ name: 'leaderboard', params: { slug: OVERALL_SLUG } }"
+      :aria-current="activeSlug === OVERALL_SLUG ? 'page' : undefined"
+    >
+      {{ t('leaderboard.overall') }}
+    </RouterLink>
     <RouterLink
       v-for="category in categories"
       :key="category.slug"

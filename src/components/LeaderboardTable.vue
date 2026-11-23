@@ -6,6 +6,8 @@ const { t } = useI18n()
 const props = defineProps({
   entries: { type: Array, required: true },
   highlight: { type: Object, default: null }, // { rank, nickname } of a just-saved score
+  // "Genel" board: rows have categories_played instead of language / correct_count.
+  categoryCount: { type: Number, default: null },
 })
 
 function isHighlighted(entry) {
@@ -21,8 +23,11 @@ function isHighlighted(entry) {
       <tr>
         <th scope="col" class="rank">#</th>
         <th scope="col">{{ t('leaderboard.nickname') }}</th>
-        <th scope="col" class="flag"><span class="sr-only">{{ t('leaderboard.language') }}</span></th>
-        <th scope="col" class="num">{{ t('leaderboard.correct') }}</th>
+        <template v-if="categoryCount === null">
+          <th scope="col" class="flag"><span class="sr-only">{{ t('leaderboard.language') }}</span></th>
+          <th scope="col" class="num">{{ t('leaderboard.correct') }}</th>
+        </template>
+        <th v-else scope="col" class="num">{{ t('leaderboard.categoriesPlayed') }}</th>
         <th scope="col" class="num">{{ t('leaderboard.points') }}</th>
       </tr>
     </thead>
@@ -37,11 +42,14 @@ function isHighlighted(entry) {
           {{ entry.nickname }}
           <span v-if="isHighlighted(entry)" class="new-tag">{{ t('leaderboard.you') }}</span>
         </td>
-        <td class="flag">
-          <span aria-hidden="true" :title="t(`languages.${entry.language}`)">{{ FLAGS[entry.language] }}</span>
-          <span class="sr-only">{{ t(`languages.${entry.language}`) }}</span>
-        </td>
-        <td class="num">{{ entry.correct_count }}</td>
+        <template v-if="categoryCount === null">
+          <td class="flag">
+            <span aria-hidden="true" :title="t(`languages.${entry.language}`)">{{ FLAGS[entry.language] }}</span>
+            <span class="sr-only">{{ t(`languages.${entry.language}`) }}</span>
+          </td>
+          <td class="num">{{ entry.correct_count }}</td>
+        </template>
+        <td v-else class="num">{{ entry.categories_played }}/{{ categoryCount }}</td>
         <td class="num points">{{ entry.points }}</td>
       </tr>
     </tbody>

@@ -1,7 +1,7 @@
 <script setup>
 import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { getCategories, getLeaderboard } from '../api/quiz.js'
+import { OVERALL_SLUG, getCategories, getLeaderboard, getOverallLeaderboard } from '../api/quiz.js'
 import { useI18n } from '../composables/useI18n.js'
 import { errorMessage } from '../composables/useQuiz.js'
 import CategoryTabs from '../components/CategoryTabs.vue'
@@ -29,23 +29,36 @@ const keptOlderBest = computed(() => {
   return row && row.points > highlight.value.points ? row.points : null
 })
 
+// Quick tab or language switches start several loads: only the latest may update the page,
+// otherwise a slow older response would show the wrong board.
+let latestLoad = 0
+
 async function load(slug) {
+  const thisLoad = ++latestLoad
+  const isStale = () => thisLoad !== latestLoad
   loading.value = true
   errorText.value = ''
   try {
-    if (categories.value.length === 0) categories.value = await getCategories(locale.value)
+    if (categories.value.length === 0) {
+      const list = await getCategories(locale.value)
+      if (isStale()) return
+      categories.value = list
+    }
     if (!slug) {
-      const first = categories.value[0]
-      if (first) router.replace({ name: 'leaderboard', params: { slug: first.slug } })
+      router.replace({ name: 'leaderboard', params: { slug: OVERALL_SLUG } })
       return
     }
-    board.value = await getLeaderboard(slug, locale.value)
+    const data =
+      slug === OVERALL_SLUG ? { overall: true, ...(await getOverallLeaderboard()) } : await getLeaderboard(slug, locale.value)
+    if (isStale()) return
+    board.value = data
   } catch (error) {
+    if (isStale()) return
     board.value = null
     errorText.value = errorMessage(error)
     canRetry.value = error.code !== 'CATEGORY_NOT_FOUND'
   } finally {
-    loading.value = false
+    if (!isStale()) loading.value = false
   }
 }
 
@@ -97,9 +110,14 @@ watch(locale, () => {
     <div
       v-else-if="board"
       class="board"
-      :style="{ '--accent': `var(--neon-${board.category.color})` }"
+      :style="{ '--accent': board.overall ? 'var(--color-text)' : `var(--neon-${board.category.color})` }"
     >
-      <LeaderboardTable :entries="board.entries" :highlight="highlight" />
+      <p v-if="board.overall" class="status">{{ t('leaderboard.overallNote') }}</p>
+      <LeaderboardTable
+        :entries="board.entries"
+        :highlight="board.overall ? null : highlight"
+        :category-count="board.overall ? board.category_count : null"
+      />
       <RouterLink to="/" class="play">{{ t('leaderboard.play') }}</RouterLink>
     </div>
 

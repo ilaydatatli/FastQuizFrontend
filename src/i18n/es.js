@@ -36,6 +36,9 @@ export default {
   },
   leaderboard: {
     title: 'Clasificación',
+    overall: 'General',
+    overallNote: 'La suma de la mejor puntuación en cada categoría. ¡Más categorías, más puntos! 🚀',
+    categoriesPlayed: 'Categorías',
     categories: 'Categorías',
     empty: 'Todavía no hay puntuaciones. ¡Sé el primero! ✨',
     noCategories: 'Todavía no hay categorías en este idioma.',

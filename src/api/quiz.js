@@ -33,6 +33,13 @@ export function saveScore(quizId, token, nickname) {
   return apiFetch(`/quizzes/${enc(quizId)}/score/`, { method: 'POST', token, body: { nickname } })
 }
 
+// Route slug of the "Genel" tab (not a category): sum of each category's best score.
+export const OVERALL_SLUG = 'genel'
+
+export function getOverallLeaderboard() {
+  return apiFetch('/leaderboard/')
+}
+
 export function getLeaderboard(categorySlug, language) {
   return apiFetch(`/leaderboard/${enc(categorySlug)}/?lang=${enc(language)}`)
 }
