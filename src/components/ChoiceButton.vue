@@ -52,10 +52,18 @@ defineEmits(['choose'])
   transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease, opacity 0.15s ease;
 }
 
-.choice:not(:disabled):hover,
 .choice:focus-visible {
   border-color: var(--accent, var(--neon-cyan));
   background: var(--color-surface-2);
+}
+
+/* Only with a real mouse: on phones :hover sticks to the last tapped spot,
+   so the next question's answer in that place looked already chosen. */
+@media (hover: hover) {
+  .choice:not(:disabled):hover {
+    border-color: var(--accent, var(--neon-cyan));
+    background: var(--color-surface-2);
+  }
 }
 
 .choice:disabled {
