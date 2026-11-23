@@ -3,6 +3,7 @@ import { onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { getCategories } from '../api/quiz.js'
 import { useI18n } from '../composables/useI18n.js'
+import { usePlayer } from '../composables/usePlayer.js'
 import { errorMessage, useQuiz } from '../composables/useQuiz.js'
 import CategoryCard from '../components/CategoryCard.vue'
 import InstallButton from '../components/InstallButton.vue'
@@ -11,6 +12,7 @@ import NeonButton from '../components/NeonButton.vue'
 const router = useRouter()
 const quiz = useQuiz()
 const { t, locale } = useI18n()
+const { nickname, startEditing } = usePlayer()
 
 const categories = ref([])
 const loading = ref(true)
@@ -60,6 +62,10 @@ watch(locale, loadCategories)
 
 <template>
   <section class="hero">
+    <p v-if="nickname" class="hello">
+      {{ t('player.hello', { name: nickname }) }}
+      <button type="button" class="change" @click="startEditing">{{ t('player.change') }}</button>
+    </p>
     <h1>{{ t('home.title') }}</h1>
     <p class="rules">{{ t('home.rules') }}</p>
     <InstallButton />
@@ -85,6 +91,22 @@ watch(locale, loadCategories)
 </template>
 
 <style scoped>
+.hello {
+  color: var(--color-text-muted);
+  font-family: var(--font-display);
+}
+
+.change {
+  margin-left: var(--space-2);
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--neon-cyan);
+  font: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
 .hero {
   display: flex;
   flex-direction: column;

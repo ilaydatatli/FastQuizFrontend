@@ -1,9 +1,17 @@
 <script setup>
-import { RouterLink, RouterView } from 'vue-router'
+import { computed } from 'vue'
+import { RouterLink, RouterView, useRoute } from 'vue-router'
 import LanguageSwitcher from './components/LanguageSwitcher.vue'
+import NicknameCard from './components/NicknameCard.vue'
 import { useI18n } from './composables/useI18n.js'
+import { usePlayer } from './composables/usePlayer.js'
 
 const { t } = useI18n()
+const route = useRoute()
+const { nickname, editing } = usePlayer()
+
+// Asked once, before the first quiz; never on top of a running (timed) quiz.
+const askNickname = computed(() => editing.value || (!nickname.value && route.name !== 'quiz'))
 </script>
 
 <template>
@@ -17,6 +25,7 @@ const { t } = useI18n()
   <main class="page">
     <RouterView />
   </main>
+  <NicknameCard v-if="askNickname" />
 </template>
 
 <style scoped>
