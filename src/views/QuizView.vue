@@ -6,6 +6,7 @@ import { errorMessage, useQuiz } from '../composables/useQuiz.js'
 import NeonButton from '../components/NeonButton.vue'
 import QuestionCard from '../components/QuestionCard.vue'
 import QuizHeader from '../components/QuizHeader.vue'
+import SoundPlayer from '../components/SoundPlayer.vue'
 import TimerBar from '../components/TimerBar.vue'
 
 const FEEDBACK_MS = 700
@@ -27,8 +28,11 @@ const isLocked = ref(false) // single lock shared by click, keyboard and timer
 const selectedId = ref(null)
 const correctId = ref(null)
 const timedOut = ref(false)
+// Sound questions: the timer waits until the sound's time is over (server timing).
+const listening = ref(false)
 
 let feedbackTimer = null
+let listenTimer = null
 let allowLeave = false
 
 const category = computed(() => quiz.active.value?.category ?? { name: '', color: 'cyan' })
@@ -42,6 +46,15 @@ function applyCurrent(data) {
     return
   }
   question.value = data.question
+  clearTimeout(listenTimer)
+  const listenMs = data.question.audio?.left_ms ?? 0
+  listening.value = listenMs > 0
+  if (listening.value) {
+    listenTimer = setTimeout(() => {
+      listenTimer = null
+      listening.value = false
+    }, listenMs)
+  }
   remainingMs.value = data.remaining_ms
   timeLimitMs.value = data.time_limit_ms
   selectedId.value = null
@@ -153,6 +166,7 @@ onMounted(() => {
 onBeforeUnmount(() => {
   window.removeEventListener('keydown', onKeydown)
   clearTimeout(feedbackTimer)
+  clearTimeout(listenTimer)
 })
 
 onBeforeRouteLeave(() => {
@@ -179,14 +193,16 @@ onBeforeRouteLeave(() => {
         :total="total"
         :points="points"
       />
+      <!-- While the sound plays the bar stays full; a new key starts it when the sound is over. -->
       <TimerBar
-        :key="question.id"
-        :duration-ms="remainingMs"
+        :key="`${question.id}-${listening}`"
+        :duration-ms="listening ? timeLimitMs : remainingMs"
         :total-ms="timeLimitMs"
         :color="category.color"
-        :stopped="isLocked"
+        :stopped="isLocked || listening"
         @expire="onExpire"
       />
+      <SoundPlayer v-if="question.audio" :key="`sound-${question.id}`" :audio="question.audio" />
       <p v-if="timedOut" class="badge" role="status">{{ t('quiz.timeUp') }}</p>
       <QuestionCard
         :question="question"

@@ -9,6 +9,10 @@ export default {
     empty: 'Todavía no hay categorías en español.',
   },
   quiz: {
+    soundQuestion: 'Pregunta de sonido: escucha y responde',
+    listening: 'Escuchando…',
+    playSound: 'Reproducir sonido',
+    replaySound: 'Escuchar otra vez',
     loading: 'Cargando pregunta…',
     timeUp: '¡Se acabó el tiempo!',
     leaveWarning: 'Si sales, perderás este intento. ¿Quieres salir?',

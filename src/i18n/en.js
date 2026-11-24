@@ -9,6 +9,10 @@ export default {
     empty: 'No categories available in English yet.',
   },
   quiz: {
+    soundQuestion: 'Sound question: listen and answer',
+    listening: 'Listening…',
+    playSound: 'Play sound',
+    replaySound: 'Play again',
     loading: 'Loading question…',
     timeUp: "Time's up!",
     leaveWarning: 'If you leave, this attempt will be lost. Do you want to leave?',

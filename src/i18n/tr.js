@@ -10,6 +10,10 @@ export default {
     empty: 'Şu an oynanabilir kategori yok.',
   },
   quiz: {
+    soundQuestion: 'Ses sorusu: dinle ve cevapla',
+    listening: 'Dinle…',
+    playSound: 'Sesi çal',
+    replaySound: 'Tekrar dinle',
     loading: 'Soru yükleniyor…',
     timeUp: 'Süre doldu!',
     leaveWarning: "Quiz'den çıkarsan bu deneme yarım kalır. Çıkmak istiyor musun?",

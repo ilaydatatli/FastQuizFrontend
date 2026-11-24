@@ -9,6 +9,10 @@ export default {
     empty: 'Er zijn nog geen categorieën in het Nederlands.',
   },
   quiz: {
+    soundQuestion: 'Geluidsvraag: luister en antwoord',
+    listening: 'Luisteren…',
+    playSound: 'Geluid afspelen',
+    replaySound: 'Opnieuw luisteren',
     loading: 'Vraag laden…',
     timeUp: 'De tijd is om!',
     leaveWarning: 'Als je nu weggaat, gaat deze poging verloren. Wil je echt weg?',
